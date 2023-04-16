@@ -14,4 +14,9 @@ public class CarrierReportRepository : GenericRepository<CarrierReport>, ICarrie
     public CarrierReportRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
     }
+
+    public async Task AddRangeAsync(List<CarrierReport> carrierReports)
+    {
+        await dbContext.Set<CarrierReport>().AddRangeAsync(carrierReports);
+    }
 }

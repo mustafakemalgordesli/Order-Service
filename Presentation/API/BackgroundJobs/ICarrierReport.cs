@@ -2,6 +2,6 @@
 {
     public interface ICarrierReport
     {
-        void ReportCarriers();
+        Task ReportCarriers();
     }
 }

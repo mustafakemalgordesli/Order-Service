@@ -1,6 +1,7 @@
-﻿using Application.Interfaces.UnitOfWork;
+﻿using Application.Interfaces.Repository;
+using Application.Interfaces.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace API.BackgroundJobs
 {
     public class CarrierReport : ICarrierReport
@@ -8,14 +9,37 @@ namespace API.BackgroundJobs
         private readonly IServiceProvider _serviceProvider;
         public CarrierReport(IServiceProvider serviceProvider)
         {
-            _serviceProvider= serviceProvider;
+            _serviceProvider = serviceProvider;
         }
-        public void ReportCarriers()
+        public async Task ReportCarriers()
         {
-            using (var scope = _serviceProvider.CreateScope())
+            try
             {
-                IUnitOfWork _unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
-                Console.WriteLine("Deneme");
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    IUnitOfWork _unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
+                    IOrderRepository _orderRepository = _unitOfWork.OrderRepository;
+                    ICarrierReportRepository _carrierReportRepository = _unitOfWork.CarrierReportRepository;
+
+                    var orders = await _orderRepository.GetAllAsync();
+
+                    var groupedOrders = orders.GroupBy(o => new { o.CarrierId, o.OrderDate });
+
+                    List<Domain.Entities.CarrierReport> result = groupedOrders.Select(g => new Domain.Entities.CarrierReport()
+                    {
+                        CarrierId = g.Key.CarrierId,
+                        CarrierReportDate = g.Key.OrderDate,
+                        CarrierCost = g.Sum(o => o.OrderCarrierCost)
+                    }).ToList();
+
+                    await _carrierReportRepository.AddRangeAsync(result);
+
+                    await _unitOfWork.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+                ReportCarriers();
             }
         }
     }

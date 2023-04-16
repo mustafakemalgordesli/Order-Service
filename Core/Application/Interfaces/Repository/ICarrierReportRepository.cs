@@ -9,4 +9,5 @@ namespace Application.Interfaces.Repository;
 
 public interface ICarrierReportRepository : IGenericRepository<CarrierReport>
 {
+    Task AddRangeAsync(List<CarrierReport> carrierReports);
 }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.CarrierConfigurationFeatures.Commands.UpdateCarrierConfiguration
 {
-    public class UpdateCarrierConfigurationCommandHandler : IRequestHandler<UpdateCarrierConfigurationCommand, ServiceResponse<CarrierConfigurationViewDto>
+    public class UpdateCarrierConfigurationCommandHandler : IRequestHandler<UpdateCarrierConfigurationCommand, ServiceResponse<CarrierConfigurationViewDto>>
     {
         IMapper _mapper;
         IUnitOfWork _unitOfWork;
