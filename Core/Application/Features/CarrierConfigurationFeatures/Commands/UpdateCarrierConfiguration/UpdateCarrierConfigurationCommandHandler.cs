@@ -19,11 +19,11 @@ namespace Application.Features.CarrierConfigurationFeatures.Commands.UpdateCarri
         IUnitOfWork _unitOfWork;
         ICarrierConfigurationRepository _carrierConfigurationRepository;
 
-        public UpdateCarrierConfigurationCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, ICarrierConfigurationRepository carrierConfigurationRepository)
+        public UpdateCarrierConfigurationCommandHandler(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-            _carrierConfigurationRepository = carrierConfigurationRepository;
+            _carrierConfigurationRepository = _unitOfWork.CarrierConfigurationRepository;
         }
 
         public async Task<ServiceResponse<CarrierConfigurationViewDto>> Handle(UpdateCarrierConfigurationCommand request, CancellationToken cancellationToken)
