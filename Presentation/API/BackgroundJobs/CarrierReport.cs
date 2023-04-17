@@ -13,33 +13,27 @@ namespace API.BackgroundJobs
         }
         public async Task ReportCarriers()
         {
-            try
+
+            using (var scope = _serviceProvider.CreateScope())
             {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    IUnitOfWork _unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
-                    IOrderRepository _orderRepository = _unitOfWork.OrderRepository;
-                    ICarrierReportRepository _carrierReportRepository = _unitOfWork.CarrierReportRepository;
+                 IUnitOfWork _unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
+                 IOrderRepository _orderRepository = _unitOfWork.OrderRepository;
+                 ICarrierReportRepository _carrierReportRepository = _unitOfWork.CarrierReportRepository;
 
-                    var orders = await _orderRepository.GetAllAsync();
+                 var orders = await _orderRepository.GetAllAsync();
 
-                    var groupedOrders = orders.GroupBy(o => new { o.CarrierId, o.OrderDate });
+                 var groupedOrders = orders.GroupBy(o => new { o.CarrierId, o.OrderDate });
 
-                    List<Domain.Entities.CarrierReport> result = groupedOrders.Select(g => new Domain.Entities.CarrierReport()
-                    {
-                        CarrierId = g.Key.CarrierId,
-                        CarrierReportDate = g.Key.OrderDate,
-                        CarrierCost = g.Sum(o => o.OrderCarrierCost)
-                    }).ToList();
+                 List<Domain.Entities.CarrierReport> result = groupedOrders.Select(g => new Domain.Entities.CarrierReport()
+                 {
+                     CarrierId = g.Key.CarrierId,
+                     CarrierReportDate = g.Key.OrderDate,
+                     CarrierCost = g.Sum(o => o.OrderCarrierCost)
+                 }).ToList();
 
-                    await _carrierReportRepository.AddRangeAsync(result);
+                 await _carrierReportRepository.AddRangeAsync(result);
 
-                    await _unitOfWork.SaveChangesAsync();
-                }
-            }
-            catch (Exception)
-            {
-                ReportCarriers();
+                 await _unitOfWork.SaveChangesAsync();
             }
         }
     }

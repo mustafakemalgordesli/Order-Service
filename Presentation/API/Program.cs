@@ -23,6 +23,8 @@ builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddScoped<ICarrierReport, CarrierReport>();
+
 builder.Services.AddHangfire(x => builder.Configuration.GetConnectionString("DevConnection"));
 builder.Services.AddHangfireServer();
 
